@@ -1,21 +1,19 @@
 import unittest
-from selenium import webdriver
-from challenges.copart import copartPage
+from challenges.copart import copartPages
 
 
 class Challenge2(unittest.TestCase):
     def setUp(self):
-        driver_path = "../chromedriver.exe" if __name__ == 'challenge2' else "chromedriver.exe"
-        self.driver = webdriver.Chrome(driver_path)
+        self.driver = copartPages.DriverFactory.build_driver("chrome", __name__);
 
     def tearDown(self):
         self.driver.close()
 
     def test_challenge2(self):
-        homepage = copartPage.Homepage(self.driver)
+        homepage = copartPages.Homepage(self.driver)
         homepage.navigate()
         homepage.do_search("exotics")
-        results_page = copartPage.ResultsPage(self.driver)
+        results_page = copartPages.ResultsPage(self.driver)
         results_page.wait_for_page_load()
         models = results_page.get_results_by_column("make")
         self.assertIn("PORSCHE", models)

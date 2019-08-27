@@ -1,11 +1,10 @@
 import unittest
-from selenium import webdriver
+from challenges.copart import copartPages
 
 
 class Challenge1(unittest.TestCase):
     def setUp(self):
-        driver_path = "../chromedriver.exe" if __name__ == 'challenge1' else "chromedriver.exe"
-        self.driver = webdriver.Chrome(driver_path)
+        self.driver = copartPages.DriverFactory.build_driver("chrome", __name__);
 
     def tearDown(self):
         self.driver.close()

@@ -1,7 +1,25 @@
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 import time
+import os
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+
+
+class DriverFactory(object):
+    # calling_name is necessary: if the call is coming in from challengeSuite.py,
+    # names will be challenges.challenge1.challenge1 etc
+    # otherwise, from individual files, it wil be file names like challenge1
+    @staticmethod
+    def build_driver(browser, calling_name):
+        if browser == "chrome":
+            driver_path = os.path.abspath("chromedriver.exe" if "." in calling_name else "../chromedriver.exe")
+            driver = webdriver.Chrome(driver_path)
+        elif browser == "firefox":
+            driver_path = os.path.abspath("geckodriver.exe" if "." in calling_name else "../geckodriver.exe")
+            driver = webdriver.Firefox(executable_path=driver_path)
+        return driver
+
 
 class BasePage(object):
     url = None
@@ -95,11 +113,16 @@ class ResultsPage(BasePage):
         self.wait_for_element(By.CSS_SELECTOR, search_string_selector)
         return self.driver.find_element_by_css_selector(search_string_selector).text
 
+    def get_not_found_string(self):
+        not_found_selector = "[data-uname='sorryMessage']"
+        self.wait_for_element(By.CSS_SELECTOR, not_found_selector)
+        return self.driver.find_element_by_css_selector(not_found_selector).text
+
     def set_result_max(self, limit):
         wait = WebDriverWait(self.driver, 10)
         self.driver.find_element_by_xpath(
             f"(//select[@name='serverSideDataTable_length'])[1]/option[@value='{limit}']").click()
-        self.wait_for_element(By.ID, "serverSideDataTable")
+        time.sleep(1)
 
     def set_filter(self, category, checkbox):
         filter_selector = f"(//div[@class='filter-inner']//a[@data-toggle='collapse'])[contains(text(), '{category}')]"
