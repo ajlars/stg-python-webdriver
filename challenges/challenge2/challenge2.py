@@ -15,8 +15,8 @@ class Challenge2(unittest.TestCase):
         homepage.do_search("exotics")
         results_page = copartPages.ResultsPage(self.driver)
         results_page.wait_for_page_load()
-        models = results_page.get_results_by_column("make")
-        self.assertIn("PORSCHE", models)
+        makes = results_page.get_results_by_column("make")
+        self.assertIn("PORSCHE", makes)
 
 
 if __name__ == '__main__':
